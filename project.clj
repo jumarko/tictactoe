@@ -46,7 +46,7 @@
                ;; lein cljsbuild once min
                {:id "min"
                 :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/tictactoe_my.js"
+                :compiler {:output-to "js/compiled/tictactoe_my.js"
                            :main tictactoe-my.core
                            :optimizations :advanced
                            :pretty-print false}}]}
@@ -104,4 +104,4 @@
                                   :init (set! *print-length* 50)
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
 
-)
+  )

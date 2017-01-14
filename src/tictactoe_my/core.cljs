@@ -54,9 +54,14 @@
        (case (get-in @app-state [:board j i])
          0 [blank i j]
          1 [circle i j]
-         2 [cross i j])
-       
-       ))])
+         2 [cross i j])))
+   [:p
+    [:button
+     {:on-click
+      (fn new-game-click [e]
+        (swap! app-state assoc :board (new-board 3)))}
+     "New Game"]]]
+  )
 
 (reagent/render-component [tictactoe]
   (. js/document (getElementById "app")))

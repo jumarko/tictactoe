@@ -7,17 +7,27 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 
-(defonce app-state (atom {:text "Welcome to tic tac toe"}))
+(defn new-board [n]
+  (vec (repeat n (vec (repeat n 0)))))
+
+(defonce app-state (atom {:text "Welcome to tic tac toe"
+                          :board (new-board 3)}))
 
 (defn tictactoe []
   [:center
    [:h1 (:text @app-state)]
    [:svg
-    {:view-box "0 0 30 30"
+    {:view-box "0 0 3 3"
      :width 500
      :height 500}
-    [:circle {:r 30 :cx 30 :cy 30}]]
-   ])
+    (for [i (range (count (:board @app-state)))
+          j (range (count (:board @app-state)))]
+      [:rect {:width 0.9
+              :height 0.9
+              :fill "green"
+              :x i
+              :y j}])
+    ]])
 
 (reagent/render-component [tictactoe]
   (. js/document (getElementById "app")))

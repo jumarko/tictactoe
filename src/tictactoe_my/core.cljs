@@ -8,10 +8,22 @@
 ;; define your app data so that it doesn't get over-written on reload
 
 (defn new-board [n]
-  (vec (repeat n (vec (repeat n 0)))))
+  (vec (repeat n (vec (repeat n "B")))))
+
+(def board-size 9)
 
 (defonce app-state (atom {:text "Welcome to tic tac toe"
-                          :board (new-board 3)}))
+                          :board (new-board board-size)}))
+
+(defn computer-move []
+  (let [board (:board @app-state)
+        remaining-spots (for [i (range board-size)
+                              j (range board-size)
+                              :when (= "B" (get-in board [j i]))]
+                          [i j])
+        move (rand-nth remaining-spots)
+        path (into [:board] (reverse move))]
+    (swap! app-state assoc-in path "C")))
 
 (defn blank [i j]
   [:rect {:width 0.9
@@ -21,8 +33,8 @@
           :y (+ 0.05 j)
           :on-click
           (fn rect-click [e]
-            (prn "You clicked me!" i j)
-            (prn (swap! app-state update-in [:board j i] inc)))}])
+            (swap! app-state assoc-in [:board j i] "P")
+            (computer-move))}])
 
 (defn circle [i j]
   [:circle
@@ -46,20 +58,20 @@
    [:h1 (:text @app-state)]
    (into 
      [:svg
-      {:view-box "0 0 3 3"
+      {:view-box (str  "0 0 " board-size " " board-size)
        :width 500
        :height 500}]
-     (for [i (range (count (:board @app-state)))
-           j (range (count (:board @app-state)))]
+     (for [i (range board-size)
+           j (range board-size)]
        (case (get-in @app-state [:board j i])
-         0 [blank i j]
-         1 [circle i j]
-         2 [cross i j])))
+         "B" [blank i j]
+         "P" [circle i j]
+         "C" [cross i j])))
    [:p
     [:button
      {:on-click
       (fn new-game-click [e]
-        (swap! app-state assoc :board (new-board 3)))}
+        (swap! app-state assoc :board (new-board board-size)))}
      "New Game"]]]
   )
 
@@ -70,5 +82,5 @@
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
-  (swap! app-state assoc-in [:board 0 0] 2)
+  ;; (swap! app-state assoc-in [:board 0 0] 2)
   )
